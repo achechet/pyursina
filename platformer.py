@@ -11,6 +11,13 @@ class Health_Bar(Entity):
         self.y = y
         self.z = z
         self.origin = (-.5, -.5)
+def reset():
+    global switch
+    player.rotation_z = 0
+    player.x = 0
+    green_bar.scale_x = 10
+    switch = 1
+    B.y = 1
 
 def update():
     global speed, dx, switch
@@ -30,6 +37,7 @@ def update():
                 player.rotation_z=90
                 green_bar.scale_x = 0
                 switch = 0
+                B.y = 0
         
     # Check the collision with traps
     dis = abs(player.x - trap.x)
@@ -37,9 +45,10 @@ def update():
         player.color = color.red
         # Check Health Bar
         green_bar.scale_x -= shrink*time.dt
-        if green_bar.scale_x < .1:
+        if green_bar.scale_x < 0.1:
             player.rotation_z = 90
             switch = 0
+            B.y = 0
     else:
         player.color = color.white                     
         
@@ -75,6 +84,10 @@ wall = Entity(model='quad', color=color.azure, scale=(1,5), x=5.5, collider='box
 level = Entity(model='quad', color=color.violet, scale=(3,1), x=2, collider='box')
 ceiling = Entity(model='quad', color=color.cyan, scale=(3,1), x=-2.5, y=1, collider='box')
 trap = Entity(model='quad', scale=(2,1), x=-6, y=-2, texture='assets/trap.png', collider='box')
+# Restart Button
+B = Button(color=color.rgb(255, 255, 255, 0), scale=(.25, .1), icon="assets/restart.png", y=1)
+B.on_click = reset
+
 #Health Bar
 full_bar = Health_Bar(4, 0, 255, 0, 0)
 green_bar = Health_Bar(4, -.01, 0, 255, 0)
