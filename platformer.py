@@ -3,14 +3,26 @@ from ursina import *
 from ursina.prefabs.platformer_controller_2d import PlatformerController2d
 
 def update():
-    global speed, dx
-    dx += speed*time.dt 
-    if abs(dx) > 2:
-        speed *= -1
-        dx = 0
-    for enemy in enemies:
-        enemy.x += speed*time.dt
-
+    global speed, dx, switch
+    if switch == 1:
+        dx += speed*time.dt 
+        if abs(dx) > 2:
+            speed *= -1
+            dx = 0
+        for enemy in enemies:
+            enemy.x += speed*time.dt
+            # Check the collision with enemies
+            if abs(player.x-enemy.x)<1 and abs(player.y - enemy.y)<1:
+                player.rotation_z=90
+                switch = 0
+        
+    # Check the collision with traps
+    dis = abs(player.x - trap.x)
+    if (abs(dis-size)%size<=1 or abs(dis-size)%size>=size-1) and abs(player.y - ground.y)<=1:
+        player.color = color.red
+    else:
+        player.color = color.white                     
+        
 class Enemy(Entity):
     def __init__(self, x, y):
         super().__init__()
@@ -74,6 +86,7 @@ for m in range(extention):
     duplicate(trap, x=-6+size*(m+1))
     duplicate(trap, x=-6-size*(m+1))    
     
+switch = 1    
 camera.add_script(SmoothFollow(target=player, offset=[0, 1, -30], speed=4))
 # Run the app
 app.run()
